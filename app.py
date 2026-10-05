@@ -50,6 +50,8 @@ if 'current_prediction' not in st.session_state:
     st.session_state.current_prediction = None
 if 'auto_add' not in st.session_state:
     st.session_state.auto_add = True
+if 'last_auto_added_prediction' not in st.session_state:
+    st.session_state.last_auto_added_prediction = None
 
 # Callback functions for buttons to prevent stream interrupts
 def btn_add_letter():
@@ -112,12 +114,12 @@ with col2:
 
 # Webcam Loop
 if st.session_state.run_webcam:
-    cap = cv2.VideoCapture(0)
+    cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
     
     # Camera warmup retry
     if not cap.isOpened():
         time.sleep(0.5)
-        cap = cv2.VideoCapture(0)
+        cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
         
     if not cap.isOpened():
         st.error("Cannot access webcam. Make sure no other application is using it.")
@@ -149,8 +151,12 @@ if st.session_state.run_webcam:
         st.session_state.current_prediction = display_pred if display_pred not in ["No hand detected", "Invalid crop", "-"] else None
         
         # Hands-Free Auto Add when gesture is held stable
-        if st.session_state.auto_add and stable_pred and conf >= 0.40:
+        if (st.session_state.auto_add
+            and stable_pred
+            and conf >= 0.40
+            and stable_pred != st.session_state.last_auto_added_prediction):
             st.session_state.word_builder.add_letter(stable_pred)
+            st.session_state.last_auto_added_prediction = stable_pred
             
         # Determine status text and color
         if raw_pred == "No hand detected":
