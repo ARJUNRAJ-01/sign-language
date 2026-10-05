@@ -52,7 +52,9 @@ if 'auto_add' not in st.session_state:
     st.session_state.auto_add = True
 if 'last_auto_added_prediction' not in st.session_state:
     st.session_state.last_auto_added_prediction = None
-
+if 'camera' not in st.session_state:
+    st.session_state.camera = None
+    
 # Callback functions for buttons to prevent stream interrupts
 def btn_add_letter():
     pred = st.session_state.get('current_prediction')
