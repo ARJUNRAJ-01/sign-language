@@ -87,6 +87,9 @@ with col1:
     with col_stop:
         if st.button("⏹️ Stop Camera", key="stop_cam", use_container_width=True):
             st.session_state.run_webcam = False
+            if st.session_state.camera is not None:
+                st.session_state.camera.release()
+                st.session_state.camera = None
     with col_auto:
         st.session_state.auto_add = st.checkbox("⚡ Hands-Free Auto Add", value=st.session_state.auto_add, help="Automatically types the letter when held steady for ~1 second")
 
