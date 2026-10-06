@@ -1,4 +1,4 @@
-import numpy as np
+﻿import numpy as np
 import math
 
 class LandmarkRuleEngine:
@@ -142,7 +142,7 @@ class LandmarkRuleEngine:
         # 'D': Index straight UP (vertical)
         # 'G': Index pointed HORIZONTALLY
         # 'Z': Like 'D' but motion-based. If model strongly predicts Z, allow it.
-        if idx and not mid and not ring and not pinky:
+        if idx and not mid and not ring and not pinky and model_pred in ["D", "G", "Z"]:
             if horiz or model_pred == "G":
                 return "G", max(model_conf, 0.88)
             elif model_pred == "Z":
@@ -151,14 +151,14 @@ class LandmarkRuleEngine:
                 return "D", max(model_conf, 0.90)
 
         # 5. Disambiguate 'F' vs 'W'
-        if mid and ring:
+        if mid and ring and model_pred in ["F", "W"]:
             if pinky and d(it, tt) < 55: # index touches thumb (circle), other 3 extended
                 return "F", max(model_conf, 0.92)
             if idx and not pinky: # index, middle, ring extended. pinky down
                 return "W", max(model_conf, 0.92)
 
         # 6. Disambiguate 'H' vs 'B' vs 'U' vs 'V' vs 'K'
-        if idx and mid:
+        if idx and mid and model_pred in ["H", "B", "U", "V", "K"]:
             if ring and pinky:
                 # All 4 fingers up -> B
                 return "B", max(model_conf, 0.92)
